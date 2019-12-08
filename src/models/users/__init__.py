@@ -2,6 +2,7 @@ from flask_login import UserMixin
 from src import db
 from werkzeug.security import generate_password_hash,check_password_hash
 
+
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key = True)
@@ -22,5 +23,9 @@ class Token(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id), nullable=False)
     user = db.relationship(User)
 
+class TokenRecover(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String, nullable=False)
+    email = db.Column(db.String, nullable=False)
 
 db.create_all()
