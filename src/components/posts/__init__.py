@@ -58,7 +58,7 @@ def get_posts():
 
 
 @posts_blueprint.route("/like/<id>", methods=["PUT","GET"])
-# @login_required
+@login_required
 def post_like(id):
     post = Posts.query.filter_by(id = id).first()
     if post:
@@ -69,3 +69,18 @@ def post_like(id):
     return jsonify({
         "message":"like success"
     })
+
+@posts_blueprint.route("/unlike/<id>", methods=["DELETE","PUT"])
+@login_required
+def post_unlike(id):
+    post = Posts.query.filter_by(id = id).first()
+    if post:
+        post.likes.remove(current_user)
+        db.session.commit()
+        return jsonify({
+            "message":"unlike success"
+        })
+    else:
+        return jsonify({
+            "message":"post not found"
+        })
