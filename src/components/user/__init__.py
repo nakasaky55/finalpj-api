@@ -160,7 +160,8 @@ def new_password(token):
 def get_user():
     return jsonify({
       "username": current_user.username,
-      "email": current_user.email
+      "email": current_user.email,
+      "id": current_user.get_id()
     })
 
 

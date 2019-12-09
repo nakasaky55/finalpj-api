@@ -20,11 +20,17 @@ class Posts(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     user = db.relation(User)
     hastags = db.relationship("Hastags", secondary=tags)
-    likes = db.relationship("User", secondary=likes)
+    likes = db.relationship("User", secondary=likes, backref='post')
     
     def convert_to_local(self):
         LOCAL_TIMEZONE = datetime.datetime.now(datetime.timezone.utc).astimezone().tzinfo
         return self.created_at
+    
+    def get_user_like(self):
+        users =[]
+        for like in self.likes:
+            users.append(like.get_id())
+        return users
 
 class Hastags(db.Model):
     id = db.Column(db.Integer, primary_key=True)

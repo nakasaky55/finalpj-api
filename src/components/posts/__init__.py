@@ -38,7 +38,6 @@ def get_posts():
     query_post = Posts.query.order_by(Posts.created_at.desc()).all()
     posts = []
     for post in query_post:
-        print("ps like", post.likes)
         _hastag = []
         for hastag in post.hastags:
             _hastag.append(hastag.description)
@@ -49,7 +48,7 @@ def get_posts():
             "author": post.user.username,
             "author_id": post.user.id,
             "hastags": _hastag,
-            "likes": post.likes
+            "likes": post.get_user_like()
         }
         posts.append(inloop_post)
     # db.session.commit()
@@ -63,10 +62,7 @@ def get_posts():
 def post_like(id):
     post = Posts.query.filter_by(id = id).first()
     if post:
-        like_record = likes()
-        like_record.post_id = id
-        like_record.user_id = current_user.id
-        db.session.add(like_record)
+        post.likes.append(current_user)
         db.session.commit()
     else:
         print("post not found")
