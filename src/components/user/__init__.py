@@ -19,7 +19,7 @@ def send_simple_message(token, email, name):
 		data={"from": "Mailgun Sandbox <postmaster@mg.anhkhoa.dev>",
 			"to": f"<{email}>",
 			"subject": f"Hello {name}",
-		  "html": render_template("mails/recover.html", token = token)})
+		  "html": render_template("mails/recover.html", token = token, app.config["HOMEPAGE_URL"])})
 
 ## 'host/user/'
 @user_blueprint.route('/')
@@ -107,7 +107,7 @@ def forgot_password():
       })
     else:
       token = ts.dumps(request.json['email'], salt='recover-password-secret')
-      custom_token = f"http://localhost:3000/landing/new_password/{token}"
+      custom_token = f"{app.config["HOMEPAGE_URL"]}/{token}"
       response = send_simple_message(custom_token, request.json["email"], check_user.username)
       sent_token = TokenRecover.query.filter_by(email = request.json['email']).first()
       if sent_token:
