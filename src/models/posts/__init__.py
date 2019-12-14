@@ -74,7 +74,7 @@ class Comment(db.Model):
     content = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.datetime.now())
     author_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    author = db.relationship("User")
+    author = db.relationship("users")
 
     def get_author(self):
         return self.author.username
