@@ -14,10 +14,9 @@ class User(UserMixin, db.Model):
     address = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.datetime.now())
     posts_created = db.relationship("Posts")
-    followers = db.relationship("Follow", foreign_keys="Follow.main_id", backref="follower")
+    mainid = db.relationship("Follow", foreign_keys="Follow.main_id", backref="follower")
     followings = db.relationship("Follow", foreign_keys="Follow.follower_id", backref="following")
     
-
     def set_password(self, password):
         self.password = generate_password_hash(password)
     
@@ -44,23 +43,19 @@ class User(UserMixin, db.Model):
             posts_.append(json_post)
         return posts_
 
-    def get_followers(self):
-        if len(self.followers) > 0:
-            list_followers = []
-            for follower in self.followers:
-                list_followers.append({
-                    "username": follower.follower.username
-                })
-            return list_followers
-        return []
-
     def get_followings(self):
         if len(self.followings) > 0:
-            list_followings = []
+            list_mainid = []
             for following in self.followings:
-                list_followings.append({
-                    "username": following.following.username
-                })
+                list_mainid.append(following.following.id)
+            return list_mainid
+        return []
+
+    def get_followers(self):
+        if len(self.mainid) > 0:
+            list_followings = []
+            for following in self.mainid:
+                list_followings.append(following.following.id)
             return list_followings
         return []
 

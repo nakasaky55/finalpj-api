@@ -7,7 +7,7 @@ user_blueprint = Blueprint('userbp', __name__)
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
 
-from src.models.users import User,Token,TokenRecover
+from src.models.users import User,Token,TokenRecover,Follow
 from itsdangerous import URLSafeTimedSerializer
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
 
@@ -165,10 +165,9 @@ def get_user():
     })
 
 @user_blueprint.route("/get_user/<id>", methods=["GET"])
-@login_required
+# @login_required
 def get_user_by_id(id):
   user_query = User.query.get(id)
-  print(user_query.get_followers())
   return jsonify({
     "message":"success",
     "username":user_query.username,
@@ -176,6 +175,21 @@ def get_user_by_id(id):
     "user_email": user_query.email,
     "created_at": user_query.convert_to_local(),
     "posts": user_query.get_posts(),
-    "followers": user_query.get_followers(),
-    "following": user_query.get_followings()
+    "followings": user_query.get_followings(),
+    "followers": user_query.get_followers()
+  })
+
+@user_blueprint.route("/follow/<id>", methods=["POST"])
+@login_required
+def follow_user(id):
+  user_query = User.query.get(id)
+  if user_query:
+    follow_query = Follow()
+    follow_query.follower_id = current_user.id
+    follow_query.main_id = id
+    db.session.add(follow_query)
+    db.session.commit()
+  return jsonify({
+    "message":"success",
+    "followers": user_query.get_followers()
   })
