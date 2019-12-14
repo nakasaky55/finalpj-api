@@ -1,7 +1,7 @@
 from src import db
 import datetime
 import pytz
-# from src.models.users import User
+from src.models.users import User
 
 tags = db.Table('tags',
     db.Column('tag_id', db.Integer, db.ForeignKey('hastags.id'), primary_key=True),
@@ -10,7 +10,7 @@ tags = db.Table('tags',
 
 likes = db.Table('likes',
     db.Column('post_id', db.Integer, db.ForeignKey('posts.id',ondelete="cascade"), primary_key=True),
-    db.Column('user_likes_id', db.Integer, db.ForeignKey('users.id',ondelete="cascade"), primary_key=True)
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id',ondelete="cascade"), primary_key=True)
 )
 
 comments = db.Table('comments',

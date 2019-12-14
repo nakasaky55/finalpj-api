@@ -17,7 +17,6 @@ migrate = Migrate(app, db)
 
 login_manager= LoginManager(app)
 from src.models.users import User,Token
-from src.models.posts import Posts
 
 @login_manager.request_loader
 def load_user_from_request(request):

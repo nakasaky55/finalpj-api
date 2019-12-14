@@ -2,7 +2,6 @@ from flask_login import UserMixin
 from src import db
 from werkzeug.security import generate_password_hash,check_password_hash
 import datetime
-from src.models.posts import Posts
 from flask_login import current_user
 
 
