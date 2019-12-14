@@ -10,7 +10,7 @@ tags = db.Table('tags',
 
 likes = db.Table('likes',
     db.Column('post_id', db.Integer, db.ForeignKey('posts.id',ondelete="cascade"), primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey("users.id",ondelete="cascade"), primary_key=True)
+    db.Column('user_likes_id', db.Integer, db.ForeignKey("users.id",ondelete="cascade"), primary_key=True)
 )
 
 comments = db.Table('comments',
