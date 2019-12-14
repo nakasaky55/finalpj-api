@@ -107,7 +107,7 @@ def forgot_password():
       })
     else:
       token = ts.dumps(request.json['email'], salt='recover-password-secret')
-      custom_token = f"{app.config['HOMEPAGE_URL']}/{token}"
+      custom_token = f"{app.config['HOMEPAGE_URL']}/landing/new_password/{token}"
       response = send_simple_message(custom_token, request.json["email"], check_user.username)
       sent_token = TokenRecover.query.filter_by(email = request.json['email']).first()
       if sent_token:
@@ -164,4 +164,18 @@ def get_user():
       "id": current_user.get_id()
     })
 
-
+@user_blueprint.route("/get_user/<id>", methods=["GET"])
+@login_required
+def get_user_by_id(id):
+  user_query = User.query.get(id)
+  print(user_query.get_followers())
+  return jsonify({
+    "message":"success",
+    "username":user_query.username,
+    "user_id": user_query.id,
+    "user_email": user_query.email,
+    "created_at": user_query.convert_to_local(),
+    "posts": user_query.get_posts(),
+    "followers": user_query.get_followers(),
+    "following": user_query.get_followings()
+  })
