@@ -8,10 +8,10 @@ tags = db.Table('tags',
     db.Column('page_id', db.Integer, db.ForeignKey('posts.id'), primary_key=True)
 )
 
-likes = db.Table('likes',
-    db.Column('post_id', db.Integer, db.ForeignKey('posts.id',ondelete="cascade"), primary_key=True),
-    db.Column('user_id', db.Integer, db.ForeignKey("users.id",ondelete="cascade"), primary_key=True)
-)
+# likes = db.Table('likes',
+#     db.Column('post_id', db.Integer, db.ForeignKey('posts.id',ondelete="cascade"), primary_key=True),
+#     db.Column('user_id', db.Integer, db.ForeignKey("users.id",ondelete="cascade"), primary_key=True)
+# )
 
 comments = db.Table('comments',
     db.Column('post_id', db.Integer, db.ForeignKey('posts.id',ondelete="cascade"), primary_key=True),
