@@ -177,9 +177,10 @@ def get_most_popular():
         hastags_arr.append(tag.get_detail())
     all_hastag_sorted = sorted(hastags_arr, key = itemgetter('numb'), reverse=True)
     print(all_hastag_sorted)
-    for i in range(0,3):
-        if all_hastag_sorted[i]:
-            top_hastags.append(all_hastag_sorted[i])
+    if len(all_hastag_sorted) >0:
+        for i in range(0,3):
+            if all_hastag_sorted[i]:
+                top_hastags.append(all_hastag_sorted[i])
     return jsonify({
         "message":"success",
         "data":top_hastags
