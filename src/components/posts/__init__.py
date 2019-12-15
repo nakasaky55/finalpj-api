@@ -179,7 +179,7 @@ def get_most_popular():
     print(all_hastag_sorted)
     if len(all_hastag_sorted) >0:
         for i in range(0,3):
-            if all_hastag_sorted[i]:
+            if (i+1) < len(all_hastag_sorted):
                 top_hastags.append(all_hastag_sorted[i])
     return jsonify({
         "message":"success",
