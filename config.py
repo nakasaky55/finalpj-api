@@ -13,3 +13,4 @@ class Config(object):
   SEND_FILE_MAX_AGE_DEFAULT = 0
   API_MAIL_KEY = os.environ.get('API_MAIL_KEY')
   HOMEPAGE_URL = os.environ.get('HOMEPAGE_URL')
+  POST_PER_PAGE = 5

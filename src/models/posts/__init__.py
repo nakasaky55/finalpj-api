@@ -20,7 +20,7 @@ comments = db.Table('comments',
 
 class Posts(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    created_at = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
+    created_at = db.Column(db.DateTime, nullable=False)
     content = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User")
@@ -68,6 +68,7 @@ class Posts(db.Model):
 class Hastags(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(50), nullable=False)
+    hastags = db.relationship("Hastags", secondary=tags)
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -47,7 +47,7 @@ class User(UserMixin, db.Model):
         if len(self.followings) > 0:
             list_mainid = []
             for following in self.followings:
-                list_mainid.append(following.following.id)
+                list_mainid.append(following.follower.id)
             return list_mainid
         return []
 

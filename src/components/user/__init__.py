@@ -193,3 +193,19 @@ def follow_user(id):
     "message":"success",
     "followers": user_query.get_followers()
   })
+
+@user_blueprint.route("/unfollow/<id>", methods=["DELETE"])
+@login_required
+def unfollow_user(id):
+  user_query = User.query.get(id)
+  currnet_user_following_list = current_user.get_followings()
+  print(id , currnet_user_following_list)
+  if user_query:
+    print('run unfollow')
+    unfollow_query = Follow.query.filter_by(main_id = id).filter_by(follower_id = current_user.id).first()
+    db.session.delete(unfollow_query)
+    db.session.commit()
+  return jsonify({
+    "message":"success",
+    "followers": user_query.get_followers()
+  })

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager,login_required, current_user
 from src import login_manager,db,app
-
+import datetime
 from src.models.posts import Posts,Hastags,likes,Comment
 
 posts_blueprint = Blueprint('postsbp', __name__)
@@ -12,6 +12,7 @@ def create_post():
     # print(request.json['hastags'])
     new_post = Posts()
     new_post.user_id = current_user.id
+    new_post.created_at = datetime.datetime.now()
     new_post.content = request.json['content']
     db.session.add(new_post)
     db.session.commit()
@@ -32,30 +33,44 @@ def create_post():
     })
 
 
-@posts_blueprint.route('/get_posts', methods=["GET"])
-@login_required
-def get_posts():
-    query_post = Posts.query.order_by(Posts.created_at.desc()).all()
+@posts_blueprint.route('/get_posts/post&page=<int:page>', methods=["GET"])
+# @login_required
+def get_posts(page):
+    following_list = current_user.get_followings()
+    next = {
+        "has_next":False,
+        "page":0
+    }
+    query_post = Posts.query.order_by(Posts.created_at.desc()).paginate(page, app.config['POST_PER_PAGE'], False)
+    print("has next",query_post.has_next)
+    if query_post.has_next:
+        next['has_next'] = True
+        next['page'] = page + 1
     posts = []
-    for post in query_post:
-        _hastag = []
-        for hastag in post.hastags:
-            _hastag.append(hastag.description)
-        inloop_post = {
-            "id": post.id,
-            "content": post.content,
-            "created_at": post.convert_to_local(),
-            "author": post.user.username,
-            "author_id": post.user.id,
-            "hastags": _hastag,
-            "like_state": post.check_like(current_user.id),
-            "likes":post.get_user_like(),
-            "comments": post.get_comments()
-        }
-        posts.append(inloop_post)
+    print(following_list)
+    for post in query_post.items:
+        print(post.user.id)
+        if post.user.id in following_list or post.user.id == current_user.id:
+            _hastag = []
+            for hastag in post.hastags:
+                _hastag.append(hastag.description)
+            inloop_post = {
+                "id": post.id,
+                "content": post.content,
+                "created_at": post.convert_to_local(),
+                "author": post.user.username,
+                "author_id": post.user.id,
+                "hastags": _hastag,
+                "like_state": post.check_like(current_user.id),
+                "likes":post.get_user_like(),
+                "comments": post.get_comments()
+            }
+            posts.append(inloop_post)
     # db.session.commit()
     return jsonify({
-        "data_received":posts
+        "data_received":posts,
+        "has_next": next['has_next'],
+        "page": next['page']
     })
 
 @posts_blueprint.route('/<id>', methods=["GET"])
