@@ -68,7 +68,13 @@ class Posts(db.Model):
 class Hastags(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     description = db.Column(db.String(50), nullable=False)
-    hastags = db.relationship("Hastags", secondary=tags)
+    hastags = db.relationship("Posts", secondary=tags)
+
+    def get_detail(self):
+        return ({
+            "name": self.description,
+            "numb": len(self.hastags)
+        })
 
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)

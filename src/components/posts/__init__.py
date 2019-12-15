@@ -3,6 +3,7 @@ from flask_login import LoginManager,login_required, current_user
 from src import login_manager,db,app
 import datetime
 from src.models.posts import Posts,Hastags,likes,Comment
+from operator import itemgetter
 
 posts_blueprint = Blueprint('postsbp', __name__)
 
@@ -165,3 +166,21 @@ def delete_post(id):
         return jsonify({
             "message": "there's no such a post"
         })
+
+@posts_blueprint.route("/hastags", methods=["GET"])
+# @login_required
+def get_most_popular():
+    hastags_arr=[]
+    top_hastags=[]
+    all_hastags = Hastags.query.all()
+    for tag in all_hastags:
+        hastags_arr.append(tag.get_detail())
+    all_hastag_sorted = sorted(hastags_arr, key = itemgetter('numb'), reverse=True)
+    print(all_hastag_sorted)
+    for i in range(0,3):
+        if all_hastag_sorted[i]:
+            top_hastags.append(all_hastag_sorted[i])
+    return jsonify({
+        "message":"success",
+        "data":top_hastags
+    })
