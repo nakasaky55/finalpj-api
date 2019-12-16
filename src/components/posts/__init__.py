@@ -201,6 +201,7 @@ def get_trending(page):
             "created_at": post.convert_to_local(),
             "author": post.user.username,
             "author_id": post.user.id,
+            "ava_url": post.user.ava_url,
             "likes": post.get_user_like(),
             "comments": post.get_comments(),
             "like_state": post.check_like(current_user.id)
@@ -234,6 +235,7 @@ def get_specific_trending(tag, page):
             "created_at": post.convert_to_local(),
             "author": post.user.username,
             "author_id": post.user.id,
+            "ava_url": post.user.ava_url,
             "likes": post.get_user_like(),
             "comments": post.get_comments(),
             "like_state": post.check_like(current_user.id)
