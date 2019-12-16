@@ -6,10 +6,21 @@ from src import login_manager,db,app
 user_blueprint = Blueprint('userbp', __name__)
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.orm.exc import MultipleResultsFound
-
 from src.models.users import User,Token,TokenRecover,Follow
 from itsdangerous import URLSafeTimedSerializer
 ts = URLSafeTimedSerializer(app.config["SECRET_KEY"])
+from src import app
+
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
+cloudinary.config( 
+  cloud_name = "hslqp9lo2", 
+  api_key = "431569318637479", 
+  api_secret = "5aLYTDDNtmlBX8MzWSpZGN4wxgs" 
+)
+
 
 ##send email function
 def send_simple_message(token, email, name):
@@ -161,11 +172,12 @@ def get_user():
     return jsonify({
       "username": current_user.username,
       "email": current_user.email,
-      "id": current_user.get_id()
+      "id": current_user.get_id(),
+      "ava_url": current_user.ava_url
     })
 
 @user_blueprint.route("/get_user/<id>", methods=["GET"])
-# @login_required
+@login_required
 def get_user_by_id(id):
   user_query = User.query.get(id)
   return jsonify({
@@ -176,7 +188,8 @@ def get_user_by_id(id):
     "created_at": user_query.convert_to_local(),
     "posts": user_query.get_posts(),
     "followings": user_query.get_followings(),
-    "followers": user_query.get_followers()
+    "followers": user_query.get_followers(),
+    "ava_url": user_query.ava_url
   })
 
 @user_blueprint.route("/follow/<id>", methods=["POST"])
@@ -208,4 +221,19 @@ def unfollow_user(id):
   return jsonify({
     "message":"success",
     "followers": user_query.get_followers()
+  })
+
+@user_blueprint.route("/<id>/upload_ava", methods=["POST"])
+@login_required
+def upload(id):
+  upload_ = cloudinary.uploader.upload(request.get_json()['file'])
+  if id == current_user.id:
+    current_user.ava_url = upload_['public_id']
+  else:
+    user_query = User.query.filter_by(id=id).first()
+    user_query.ava_url = upload_['public_id']
+  db.session.commit()
+  return jsonify({
+    "response":"success",
+    "data":upload_['public_id']
   })

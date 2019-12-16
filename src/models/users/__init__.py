@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(255), nullable = False, unique = True)
     password = db.Column(db.String(255), nullable=False, unique = False)
     address = db.Column(db.String(255))
+    ava_url = db.Column(db.String, nullable=True)
     created_at = db.Column(db.DateTime, nullable=True, default=datetime.datetime.now())
     posts_created = db.relationship("Posts")
     mainid = db.relationship("Follow", foreign_keys="Follow.main_id", backref="follower")

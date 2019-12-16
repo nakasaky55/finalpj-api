@@ -4,6 +4,9 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, login_user, current_user, login_required
 from flask_moment import Moment
 from flask_cors import CORS
+import cloudinary
+import cloudinary.uploader
+
 
 
 app = Flask(__name__)
@@ -12,6 +15,8 @@ moment = Moment(app)
 moment.init_app(app)
 CORS(app)
 db = SQLAlchemy(app)
+
+
 
 migrate = Migrate(app, db)
 

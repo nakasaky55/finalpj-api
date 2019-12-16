@@ -3,6 +3,7 @@ from flask_login import LoginManager,login_required, current_user
 from src import login_manager,db,app
 import datetime
 from src.models.posts import Posts,Hastags,likes,Comment,tags
+from src.models.users import Follow
 from operator import itemgetter
 
 posts_blueprint = Blueprint('postsbp', __name__)
@@ -43,16 +44,17 @@ def get_posts(page):
         "page":0
     }
     query_post = Posts.query.order_by(Posts.created_at.desc()).paginate(page, app.config['POST_PER_PAGE'], False)
-    print("has next",query_post.has_next)
+    # query_test = db.session.query(Posts).join((Follow, Posts.id))
+    # print(query_test)
+    print("has next",query_post.items)
     if query_post.has_next:
         next['has_next'] = True
         next['page'] = page + 1
     posts = []
-    print(following_list)
     for post in query_post.items:
-        print(post.user.id)
         if post.user.id in following_list or post.user.id == current_user.id:
             _hastag = []
+            print(post.user)
             for hastag in post.hastags:
                 _hastag.append(hastag.description)
             inloop_post = {
@@ -60,6 +62,7 @@ def get_posts(page):
                 "content": post.content,
                 "created_at": post.convert_to_local(),
                 "author": post.user.username,
+                "ava_url":post.user.ava_url,
                 "author_id": post.user.id,
                 "hastags": _hastag,
                 "like_state": post.check_like(current_user.id),
