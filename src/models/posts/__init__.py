@@ -76,6 +76,8 @@ class Hastags(db.Model):
             "numb": len(self.hastags)
         })
 
+
+
 class Comment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String, nullable=False)

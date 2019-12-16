@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash,
 from flask_login import LoginManager,login_required, current_user
 from src import login_manager,db,app
 import datetime
-from src.models.posts import Posts,Hastags,likes,Comment
+from src.models.posts import Posts,Hastags,likes,Comment,tags
 from operator import itemgetter
 
 posts_blueprint = Blueprint('postsbp', __name__)
@@ -168,7 +168,7 @@ def delete_post(id):
         })
 
 @posts_blueprint.route("/hastags", methods=["GET"])
-# @login_required
+@login_required
 def get_most_popular():
     hastags_arr=[]
     top_hastags=[]
@@ -184,4 +184,68 @@ def get_most_popular():
     return jsonify({
         "message":"success",
         "data":top_hastags
+    })
+
+@posts_blueprint.route("/explore/page=<int:page>", methods=["GET"])
+@login_required
+def get_trending(page):
+    trending = db.session.query(Posts).join((Hastags, Posts.hastags)).order_by(Posts.created_at.desc()).paginate(page, app.config['POST_PER_PAGE'], False)
+    posts_ =[]
+    for post in trending.items:
+        posts_.append({
+            "id": post.id,
+            "content": post.content,
+            "created_at": post.convert_to_local(),
+            "author": post.user.username,
+            "author_id": post.user.id,
+            "likes": post.get_user_like(),
+            "comments": post.get_comments(),
+            "like_state": post.check_like(current_user.id)
+        })
+
+    next = {
+        "has_next":False,
+        "page":0
+    }
+    if trending.has_next:
+        next['has_next'] = True
+        next['page'] = page + 1
+    return jsonify({
+        "message":"success",
+        "data":posts_,
+        "has_next":next['has_next'],
+        "page":next['page']
+    })
+
+
+@posts_blueprint.route("/trending/<tag>/page=<int:page>", methods=["GET"])
+@login_required
+def get_specific_trending(tag, page):
+    tag= "#"+tag
+    trending = db.session.query(Posts).join((Hastags, Posts.hastags)).filter(Hastags.description == tag).order_by(Posts.created_at.desc()).paginate(page, app.config['POST_PER_PAGE'], False)
+    posts_ =[]
+    for post in trending.items:
+        posts_.append({
+            "id": post.id,
+            "content": post.content,
+            "created_at": post.convert_to_local(),
+            "author": post.user.username,
+            "author_id": post.user.id,
+            "likes": post.get_user_like(),
+            "comments": post.get_comments(),
+            "like_state": post.check_like(current_user.id)
+        })
+
+    next = {
+        "has_next":False,
+        "page":0
+    }
+    if trending.has_next:
+        next['has_next'] = True
+        next['page'] = page + 1
+    return jsonify({
+        "message":"success",
+        "data":posts_,
+        "has_next":next['has_next'],
+        "page":next['page']
     })
